@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import plotly.express as px
 import joblib
 from sklearn.metrics import classification_report
 
@@ -12,8 +13,9 @@ idx_test = np.load('idx_test.npy')
 df = pd.read_csv('df.csv')
 
 st.sidebar.header("Betting Parameters")
-threshold_margin = st.sidebar.slider("Betting Margin", 0.01, 0.20, 0.02, step=0.01)
-stake = st.sidebar.number_input("Stake per Bet", min_value=1.0, max_value=1000.0, value=1.0, step=1.0)
+threshold_margin = st.sidebar.slider("Betting Margin", 0.01, 0.20, 0.05, step=0.01)
+stake = st.sidebar.number_input("Stake per Bet", min_value=1.0, max_value=10000.0, value=1.0, step=1.0)
+
 
 bet_results = []
 
@@ -65,7 +67,7 @@ roi = total_profit / (total_bets * stake) if total_bets > 0 else 0
 win_rate = bets_df['win'].mean() if total_bets > 0 else 0
 bets_df['cumulative_profit'] = bets_df['profit'].cumsum()
 
-st.title("Betting Simulation Dashboard")
+st.title("Betting Simulation using Neural Network Dashboard")
 
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Total Bets", total_bets)
@@ -73,15 +75,12 @@ col2.metric("Total Profit", f"${total_profit:.2f}")
 col3.metric("ROI", f"{roi * 100:.2f}%")
 col4.metric("Win Rate", f"{win_rate * 100:.2f}%")
 
-fig, ax = plt.subplots(figsize=(10, 5))
-ax.plot(bets_df['cumulative_profit'], marker='o')
-ax.set_title('Cumulative Profit (Neural Network)')
-ax.set_xlabel('Number of Bets')
-ax.set_ylabel('Cumulative Profit')
-ax.grid(True)
-st.pyplot(fig)
+st.subheader("Cumulative Profit")
+fig = px.line(bets_df, y='cumulative_profit', title='Cumulative Profit ',
+              labels={'index': 'Number of Bets', 'cumulative_profit': 'Cumulative Profit'})
+st.plotly_chart(fig, use_container_width=True)
 
-st.subheader("Detailed Betting Results")
+st.subheader("Betting Results")
 st.dataframe(bets_df)
 
 outcome_filter = st.multiselect(
@@ -93,5 +92,3 @@ outcome_filter = st.multiselect(
 filtered_df = bets_df[bets_df['bet_on'].isin(outcome_filter)]
 st.write(filtered_df)
 
-st.subheader("Classification Report")
-st.text(classification_report(y_true, np.argmax(probs, axis=1)))

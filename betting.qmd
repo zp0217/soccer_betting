@@ -5,6 +5,11 @@ format: html
 
 ## introduction 
 
+Sports betting market is one of the market that is show growth every year. regardless of sports, most sports allows betting and fans are 
+participating in various reason and this makes what of the element that makes sports interesting. among other sports, soccer is very unique sports where
+most games have three outcomes; Win, Loss and Draw(excluding tournament games), which makes very difficult to predict. 
+Aim of this project is to build predictive model for soccer outcome betting and apply model for betting simulation with different margin and stakes
+
 
 ## Data
 
@@ -17,8 +22,7 @@ is the largest league in the world and it is one of the leagues that is betting 
 
 This dataset contains some soccer statistics, but it is basic soccer statistics, such as the count of shots. But
 to predict soccer match outcomes to use for betting strategy, more advanced statistics are required, since
-soccer is a sport that isn't determined by just shots. To enhance our dataset, we extract data that has an xG
-goal statistics. xG goal is an advanced soccer metric that computes the probability that a shot will be a
+soccer is a sport that isn't determined by just shots. To enhance our dataset, we extract data that has an xG 
 goal. To compute this, it requires statistics such as shot location and angle of shots, which is the essence
 of soccer statistics. The dataset for this statistic was retrieved from the Kaggle dataset: premier league
 match data and season stats(https://www.kaggle.com/datasets/evangora/premier-league-data ), containing
@@ -139,4 +143,19 @@ bet365’s probability, we will place the bet.
 
 
 ## application
+
+dashboard: 
+
+
+
+## Conclusion 
+
+Our project demonstrates that using data-driven methods can make a meaningful difference in predicting soccer match outcomes and identifying profitable betting opportunities. By combining match statistics with market odds, we were able to build models that consistently outperformed random chance and showed clear strategic advantages. neural network model achieved solid prediction accuracy. 
+
+Beyond sports betting, this project shows the broader power of machine learning in decision-making under uncertainty. Similar techniques could be applied to fields like finance, business forecasting, and risk management, where interpreting signals and acting on mispricings can lead to smarter strategies. Our findings suggest that combining historical data with current market information provides a stronger foundation for making informed choices than relying on intuition alone.
+
+In the future, more sophisticated models and larger datasets could further improve predictive performance and profitability. With responsible application, data-driven strategies like ours have the potential to reshape industries where understanding probabilities and outcomes is crucial — bringing a more analytical and evidence-based approach to everyday decision-making.
+
+
+
 
