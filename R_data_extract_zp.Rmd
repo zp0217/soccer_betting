@@ -1,0 +1,58 @@
+---
+title: "Untitled"
+output: html_document
+date: "2025-04-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+```{r}
+# https://jaseziv.github.io/worldfootballR/articles/extract-fbref-data.html#match-level-data
+
+library(worldfootballR)
+epl <- fb_match_results(
+  country = "ENG",
+  gender = "M",
+  season_end_year = 2025,
+  tier = "1st"
+)
+
+#epl <- epl[, c("Home","Away","Date", "Home_xG", "Away_xG")]
+#epl <- as.data.frame(epl)
+
+#write.csv(epl, "m1.csv", row.names = FALSE)
+```
+
+
+```{r}
+epl <- epl[, c("Home","Away","Date", "Home_xG",
+"Away_xG","HomeGoals","AwayGoals")]
+epl <- as.data.frame(epl)
+
+write.csv(epl, "m2.csv", row.names = FALSE)
+```
+
+```{r}
+epl1 <- fb_match_results(
+  country = "ENG",
+  gender = "M",
+  season_end_year = 2015,
+  tier = "1st"
+)
+```
+
+```{r}
+epl2 <- fb_match_results(
+  country = "ENG",
+  gender = "M",
+  season_end_year = 2016,
+  tier = "1st"
+)
+```
+

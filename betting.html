@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>soccer betting strategy using nueral network</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="betting_files/libs/clipboard/clipboard.min.js"></script>
+<script src="betting_files/libs/quarto-html/quarto.js"></script>
+<script src="betting_files/libs/quarto-html/popper.min.js"></script>
+<script src="betting_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="betting_files/libs/quarto-html/anchor.min.js"></script>
+<link href="betting_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="betting_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="betting_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="betting_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="betting_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">soccer betting strategy using nueral network</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">introduction</h2>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<p>Betting data was collected from football-data.co.uk(https://www.football-data.co.uk/ ). This website contains betting statistics from most major football leagues worldwide with numerous seasons and basic soccer statistics such as the number of shots. Specifically, this dataset contains more than 20 betting company’s betting odds and betting-related information, which is essential for our research goal. We extracted English Premier League data for the 2017 to 2025 season, since the English Premier League is the largest league in the world and it is one of the leagues that is betting friendly.</p>
+<p>This dataset contains some soccer statistics, but it is basic soccer statistics, such as the count of shots. But to predict soccer match outcomes to use for betting strategy, more advanced statistics are required, since soccer is a sport that isn’t determined by just shots. To enhance our dataset, we extract data that has an xG goal statistics. xG goal is an advanced soccer metric that computes the probability that a shot will be a goal. To compute this, it requires statistics such as shot location and angle of shots, which is the essence of soccer statistics. The dataset for this statistic was retrieved from the Kaggle dataset: premier league match data and season stats(https://www.kaggle.com/datasets/evangora/premier-league-data ), containing 1889 to 2024 English premier league season, but very old seasons have different rules, metrics which is hard to compare with modern football, so we only treated season from 2017 to 2025.</p>
+<p>However, this dataset has some missing values in key statistics specifically it is missing for the recent season; 2024,2025. So to solve this problem, worldfootball R (https://github.com/JaseZiv/worldfootballR ) was used, which is an R wrapper. This data contains key soccer statistics for the 2024, 2025 season.</p>
+<section id="method" class="level3">
+<h3 class="anchored" data-anchor-id="method">Method</h3>
+<p>method used for this project is dense feed forward neural network. Structure of this project is a multi-classification problem, classifying win-loss-draw in a soccer game match and utilizing it for our betting strategy.</p>
+<p>So, dense feed-forward neural network architecture was built to solve multi-classification problems, setting three classes, two as home team win, one as draw, and zero as away team win. Inside the dataset, there are 22 features, but only features related to game statistics(eg. Xg goal difference) were used, leaving fourteen features for analysis. Also, some features are discrete and some are in probability, so features were scaled by standard normalization.</p>
+<p>Dense feed-forward neural networks are a very powerful deep learning method, specifically for this project architecture. To a large extent, a Dense feed-forward neural network consists of three layers; input layer, hidden layer, and output layer. The input layer consists of feature vectors that are input to the neural network architecture, with weight initialization. In this project, weight initialization is chosen by a hyperparameter searching mechanism, choosing between Xavier and random initialization. Xavier initialization initializes weights with a variance that considers the number of input and output neurons, whereas random initialization initializes randomly, using such a normal distribution.</p>
+<p>From this input layer, it is connected to hidden layers, fully connected by several neurons. The hidden layer makes a network to learn complex nonlinear relationships between input and output layers. Hidden layers consist of activation functions that compute the output of each node using input and weight from the previous step(the first layer will get from the input layer), in this project, it’s been optimized by tuning process, choosing between leaky-ReLu, Tanh, ReLU function. There are several functions. The output layer is the last layer that gets output from all fully connected layer processes. Depending on the problem(eg. regression, classification) it can have various activation functions. However, this project aims to predict win-draw-loss for soccer matches, which consists of three classes, and multi-classification problems. The softmax function was used as an activation function for the output layer. Softmax function converts logit to probability, which is useful for getting results for multi-classification problems. Besides neural network architecture, there are important elements for training neural network models. First is the Loss function. The loss function measures prediction via model by comparing actual value. Since this is a multi-classification problem, categorical cross entropy was used for the loss function. The second is the regularizer. Regularizers penalize the Loss function to prevent overfitting. There are generally two types of regularizers, L1, and L2. L1 penalizes by adding absolute value, whereas L2 penalizes by adding squared value. Also, a dropout rate was used, dropout rate drops out a certain proportion of neurons during training, which prevents overfitting. Lastly, there is an optimizer. Optimizers minimize loss function when learning parameters. Since initial parameters are random(even with different methods to set initial parameters), it will give bad or unexpected predictions, so to prevent this, an optimizer was used. Optimizers generally compute gradient descent, with learning rate, and optimizing value. There are various optimizers, but in the hyperparameter tuning process, stochastic gradient descent, RMSprop, and adaptive moment estimation(ADAM) were used. Stochastic gradient descent is a normal gradient descent method, RMSprop adapts the learning rate for each parameter, and ADAM shares features in RMSprop but it also accelerates each update in a consistent direction.</p>
+<p>One of the key processes in a neural network is tuning hyperparameters. There are many hyperparameters to tune, tuning generally makes better and optimized results from the model. For tuning, a grid search was applied, pre-set range of each parameter was the best combination for the model. Elements that were tuned are as follows: number of hidden layers, number of neurons, activation function, optimizer, learning rate, dropout rate, Regularizers, batch size, and weight initializers.</p>
+</section>
+</section>
+<section id="result" class="level2">
+<h2 class="anchored" data-anchor-id="result">result</h2>
+<p>model’s hyperparameter was tuned using grid search.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="photo/params.png" class="img-fluid figure-img"></p>
+<figcaption>table 1</figcaption>
+</figure>
+</div>
+<p>Table 1 shows hyperparameters chosen via the grid search method. Three layers were chosen, making a multi-layer perceptron(MLP).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="photo/epochs.png" class="img-fluid figure-img"></p>
+<figcaption>plot1</figcaption>
+</figure>
+</div>
+<p>Plot 1 shows the training and validation plot, showing the overall training and validation loss training process. Both training and validation loss decrease sharply within five epochs and converge fast with stable values. This indicates that training in neural networks is effective. Also, validation doesn’t increase at some point significantly, and cross-over training loss, indicating it has less tendency for overfitting. Lastly, convergence after five epochs is very smooth, this shows that training is very stable. Overall the training process is very effective.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="photo/epochs.png" class="img-fluid figure-img"></p>
+<figcaption>plot2</figcaption>
+</figure>
+</div>
+<p>Plot 2 is a confusion matrix for a neural network, showing how this model classified the labels used for the target variable(home win-away win-draw for the full-time game). The confusion matrix shows that the home team win(class 2) and the away team win( class 0) classified well, classifying around 82%. However, prediction for draws shows bad performance, predicting zero to draws, rather than predicting a home win or away win. This might be due to an imbalanced dataset, while home and away wins have more data points compared to draw results. From the neural model, we simulated sports betting, to demonstrate whether the model is helpful for betting strategy.</p>
+<table class="caption-top table">
+<caption>Table 2. Classification report: Neural network</caption>
+<colgroup>
+<col style="width: 22%">
+<col style="width: 16%">
+<col style="width: 12%">
+<col style="width: 15%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Class</th>
+<th>Precision</th>
+<th>Recall</th>
+<th>F1-Score</th>
+<th>Support (# samples)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0 (Home Win)</td>
+<td>0.58</td>
+<td>0.84</td>
+<td>0.68</td>
+<td>95</td>
+</tr>
+<tr class="even">
+<td>1 (Draw)</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>66</td>
+</tr>
+<tr class="odd">
+<td>2 (Away Win)</td>
+<td>0.75</td>
+<td>0.87</td>
+<td>0.80</td>
+<td>137</td>
+</tr>
+<tr class="even">
+<td><strong>Overall Accuracy</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td><strong>67% (298)</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Table 2 shows classification reports, showing the performance of classification. As observed in the confusion matrix, neural networks capture well for home win and away wins, but couldn’t catch when the game result is a draw. Recall scores for a home win and away win are 0.84 and 0.87, indicating the model captures most of home win and away win. However, the model fails to capture Draw. Also for Home wins, the precision score is 0.58, which shows that there are false positives, but for away wins, the precision score is 0.75, which indicates this model detects excellent away wins. From the neural network’s result we simulated betting whether our model is an effective and helpful betting strategy. From the model, we receive predicted probability and this will be compared with bookmaker’s probability, in this project we used probability from bet365’s probability. We assume betting one dollar and if our probability is at least 5% better than bet365’s probability, we will place the bet.</p>
+</section>
+<section id="application" class="level2">
+<h2 class="anchored" data-anchor-id="application">application</h2>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
