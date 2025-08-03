@@ -3,9 +3,9 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import joblib
+from tensorflow.keras.models import load_model
 
-
-final_model = joblib.load('final_model.pkl')
+final_model = load_model('final_model.keras')
 x_test = np.load('x_test.npy')
 y_test = np.load('y_test.npy')
 idx_test = np.load('idx_test.npy')

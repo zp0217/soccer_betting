@@ -326,7 +326,7 @@ X_test_betting["B365A_prob"] /= total
 
 
 
-joblib.dump(final_model, 'final_model.pkl')
+final_model.save("final_model.keras") 
 np.save('x_test.npy', x_test)
 np.save('y_test.npy', y_test)
 np.save('idx_test.npy', idx_test)
