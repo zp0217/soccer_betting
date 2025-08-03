@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import joblib
-from sklearn.metrics import classification_report
+
 
 final_model = joblib.load('final_model.pkl')
 x_test = np.load('x_test.npy')
